@@ -44,7 +44,7 @@ class EmoticonViewController: UIViewController {
     
     func itemClick(item: UIBarButtonItem)
     {
-        
+        collectionVeiw.scrollToItemAtIndexPath(NSIndexPath(forItem: 0, inSection: item.tag), atScrollPosition: UICollectionViewScrollPosition.Left, animated: true)
     }
     
     // MARK: - 懒加载
@@ -127,6 +127,8 @@ class EmoticonCell: UICollectionViewCell {
             {
                 iconButton.setImage(UIImage(named: "compose_emotion_delete"), forState: UIControlState.Normal)
                 iconButton.setImage(UIImage(named: "compose_emotion_delete_highlighted"), forState: UIControlState.Highlighted)
+            }else {
+                iconButton.setImage(nil, forState: UIControlState.Highlighted)
             }
         }
     }

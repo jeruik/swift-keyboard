@@ -37,20 +37,29 @@ class EmoticonPackage: NSObject {
     // 默认 -> 一组  -> 所有的表情模型(emoticons)
     // emoji -> 一组  -> 所有的表情模型(emoticons)
     class func loadPackages() -> [EmoticonPackage] {
+        
+        var packages = [EmoticonPackage]()
+        // 0.创建最近组
+        let pk = EmoticonPackage(id: "")
+        pk.group_name_cn = "最近"
+        pk.emoticons = [Emoticon]()
+        pk.appendEmtyEmoticons()
+        packages.append(pk)
+        
+        
         let path = NSBundle.mainBundle().pathForResource("emoticons.plist", ofType: nil, inDirectory: "Emoticons.bundle")!
         // 1.加载emoticons.plist
         let dict = NSDictionary(contentsOfFile: path)!
         // 2.或emoticons中获取packages
         let dictArray = dict["packages"] as! [[String:AnyObject]]
         // 3.遍历packages数组
-        var packages = [EmoticonPackage]()
         for d in dictArray
         {
             // 4.取出ID, 创建对应的组
             let package = EmoticonPackage(id: d["id"]! as! String)
             packages.append(package)
             package.loadEmoticons()
-            package.appendEmtyEmotions()
+            package.appendEmtyEmoticons()
         }
         return packages
     }
@@ -74,22 +83,28 @@ class EmoticonPackage: NSObject {
             index++
         }
     }
-   
-    func appendEmtyEmotions() {
     
+    /**
+     追加空白按钮
+     如果一页不足21个,那么就添加一些空白按钮补齐
+     */
+    func appendEmtyEmoticons()
+    {
         print(emoticons?.count)
-        let count = (emoticons?.count)! % 21
+        let count = emoticons!.count % 21
         print("count = \(count)")
         
         // 追加空白按钮
-        for _ in count..<20 {
+        for _ in count..<20
+        {
+            // 追加空白按钮
             emoticons?.append(Emoticon(isRemoveButton: false))
         }
-        
-        // 追加删除按钮
+        // 追加一个删除按钮
         emoticons?.append(Emoticon(isRemoveButton: true))
+        
         print(emoticons?.count)
-        print("------")
+        print("---------")
     }
     
     /**
@@ -147,13 +162,14 @@ class Emoticon: NSObject {
     /// 表情图片的全路径
     var imagePath: String?
     
+    /// 标记是否是删除按钮
     var isRemoveButton: Bool = false
-    init(isRemoveButton: Bool) {
+    
+    init(isRemoveButton: Bool)
+    {
         super.init()
         self.isRemoveButton = isRemoveButton
     }
-    
-    
     
     init(dict: [String: String], id: String)
     {
