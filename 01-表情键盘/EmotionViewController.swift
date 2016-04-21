@@ -11,13 +11,27 @@ import UIKit
 
 private let XMGEmoticonCellReuseIdentifier = "XMGEmoticonCellReuseIdentifier"
 class EmoticonViewController: UIViewController {
+    
+    /// 定义闭包属性，用于传递选中的表情
+    var emotionDidSelctedCallBack:(emotion: Emoticon) -> () // 定义
+    
+    init(callBack: (emotion: Emoticon) -> ()) {
+        
+        self.emotionDidSelctedCallBack = callBack  // 赋值
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.redColor()
         
         // 1.初始化UI
         setupUI()
-        
     }
     /**
      初始化UI
@@ -53,6 +67,7 @@ class EmoticonViewController: UIViewController {
         // 注册cell
         clv.registerClass(EmoticonCell.self, forCellWithReuseIdentifier: XMGEmoticonCellReuseIdentifier)
         clv.dataSource = self
+        clv.delegate = self
         return clv
     }()
     
@@ -77,7 +92,7 @@ class EmoticonViewController: UIViewController {
     private lazy var packages: [EmoticonPackage] = EmoticonPackage.loadPackages()
 }
 
-extension EmoticonViewController: UICollectionViewDataSource
+extension EmoticonViewController: UICollectionViewDataSource, UICollectionViewDelegate
 {
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         return packages.count
@@ -100,6 +115,11 @@ extension EmoticonViewController: UICollectionViewDataSource
         cell.emoticon = emoticon
         
         return cell
+    }
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        let emotion = packages[indexPath.section].emoticons![indexPath.item]
+        emotionDidSelctedCallBack(emotion: emotion)
     }
 }
 
@@ -143,8 +163,9 @@ class EmoticonCell: UICollectionViewCell {
     {
         contentView.addSubview(iconButton)
         iconButton.backgroundColor = UIColor.whiteColor()
-        //        iconButton.frame = contentView.bounds
         iconButton.frame = CGRectInset(contentView.bounds, 4, 4)
+//        iconButton.frame = CGRectInset(contentView.bounds, 4, 4)
+        iconButton.userInteractionEnabled = false
         
     }
     
